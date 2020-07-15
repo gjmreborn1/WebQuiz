@@ -2,7 +2,7 @@ package com.gjm.webquizengine.quiz;
 
 import com.gjm.webquizengine.quiz.dto.QuizSolutionRequest;
 import com.gjm.webquizengine.quiz.dto.QuizSolutionResponse;
-import lombok.AllArgsConstructor;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.web.bind.annotation.*;
 
@@ -11,10 +11,14 @@ import java.util.List;
 
 @RestController
 @RequestMapping(path = "/api")
-@AllArgsConstructor
 public class QuizController {
-    @Qualifier("InMemoryQuizService")
     private final QuizService quizService;
+
+    @Autowired
+    //    @Qualifier("InMemoryQuizService")
+    public QuizController(@Qualifier("DatabaseQuizService") QuizService quizService) {
+        this.quizService = quizService;
+    }
 
     @GetMapping(path = "/quizzes/{id}")
     public Quiz getQuiz(@PathVariable int id) {
