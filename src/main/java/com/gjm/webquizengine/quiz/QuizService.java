@@ -7,4 +7,5 @@ public interface QuizService {
     List<Quiz> findAllQuizzes();
     void addQuiz(Quiz quiz);
     boolean solveQuiz(int id, List<Integer> answer);
+    void deleteQuiz(int id);
 }

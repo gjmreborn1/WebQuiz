@@ -39,4 +39,11 @@ public class QuizServiceDatabaseImpl implements QuizService {
 
         return quiz.isCorrect(answer);
     }
+
+    @Override
+    public void deleteQuiz(int id) {
+        findQuizById(id);
+
+        quizRepository.deleteById(id);
+    }
 }

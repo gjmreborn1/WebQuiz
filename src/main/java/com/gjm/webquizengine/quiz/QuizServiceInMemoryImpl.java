@@ -42,4 +42,11 @@ public class QuizServiceInMemoryImpl implements QuizService {
 
         return quiz.isCorrect(answer);
     }
+
+    @Override
+    public void deleteQuiz(int id) {
+        findQuizById(id);
+
+        quizzes.removeIf(quiz -> quiz.getId() == id);
+    }
 }

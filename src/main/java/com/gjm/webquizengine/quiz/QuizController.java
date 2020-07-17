@@ -5,6 +5,8 @@ import com.gjm.webquizengine.quiz.dto.QuizSolutionRequest;
 import com.gjm.webquizengine.quiz.dto.QuizSolutionResponse;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
@@ -57,5 +59,14 @@ public class QuizController {
 
         boolean solveResult = quizService.solveQuiz(id, quizSolutionRequest.getAnswer());
         return new QuizSolutionResponse(solveResult);
+    }
+
+    @DeleteMapping(path = "/quizzes/{id}")
+    public ResponseEntity<?> deleteQuiz(@PathVariable int id,
+                                     @RequestHeader(name = "Authorization", required = false) String token) {
+        jwtUtils.validateToken(token);
+
+        quizService.deleteQuiz(id);
+        return new ResponseEntity<>(HttpStatus.NO_CONTENT);
     }
 }
