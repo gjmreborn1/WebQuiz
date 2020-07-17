@@ -1,5 +1,6 @@
 package com.gjm.webquizengine.user;
 
+import at.favre.lib.crypto.bcrypt.BCrypt;
 import lombok.Data;
 
 import javax.persistence.*;
@@ -29,4 +30,15 @@ public class User {
     @NotEmpty(message = "Email can't be empty")
     @Email(message = "Email must be an valid email")
     private String email;
+
+    public void encodePassword() {
+        password = BCrypt.withDefaults()
+                .hashToString(12, password.toCharArray());
+    }
+
+    public boolean equalsPassword(String password) {
+        return BCrypt.verifyer()
+                .verify(password.toCharArray(), this.password)
+                .verified;
+    }
 }

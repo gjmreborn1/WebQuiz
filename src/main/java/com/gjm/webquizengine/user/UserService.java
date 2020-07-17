@@ -20,6 +20,7 @@ public class UserService {
             throw new UserAlreadyExistException();
         }
 
+        user.encodePassword();
         userRepository.save(user);
     }
 
@@ -29,7 +30,7 @@ public class UserService {
             throw new UserDoesNotExistException();
         }
 
-        if(user.getPassword().equals(loginDto.getPassword())) {
+        if(user.equalsPassword(loginDto.getPassword())) {
             return jwtUtils.generateToken(user.getUsername());
         } else {
             throw new UserWrongPasswordException();
