@@ -1,4 +1,7 @@
 # Web Quiz Engine
+
+[![gjmreborn1](https://circleci.com/gh/gjmreborn1/WebQuiz.svg?style=shield)](https://circleci.com)
+
 The multi-user web application for creating and solving quizzes.
 
 ### Each quiz has these fields:
