@@ -1,6 +1,5 @@
 package com.gjm.webquizengine.quiz;
 
-import com.gjm.webquizengine.quiz.error_handling.NoQuizException;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
 
@@ -17,16 +16,6 @@ public class QuizServiceInMemoryImpl implements QuizService {
     }
 
     @Override
-    public Quiz findQuizById(int id) {
-        for(Quiz quiz : quizzes) {
-            if(quiz.getId() == id) {
-                return quiz;
-            }
-        }
-        throw new NoQuizException();
-    }
-
-    @Override
     public List<Quiz> findAllQuizzes() {
         return quizzes;
     }
@@ -34,13 +23,6 @@ public class QuizServiceInMemoryImpl implements QuizService {
     @Override
     public void addQuiz(Quiz quiz) {
         quizzes.add(quiz);
-    }
-
-    @Override
-    public boolean solveQuiz(int id, List<Integer> answer) {
-        Quiz quiz = findQuizById(id);
-
-        return quiz.isCorrect(answer);
     }
 
     @Override

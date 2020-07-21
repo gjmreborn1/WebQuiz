@@ -8,11 +8,6 @@ import org.springframework.web.bind.annotation.RestControllerAdvice;
 
 @RestControllerAdvice
 public class ControllerExceptionHandler {
-    @ExceptionHandler(NoQuizException.class)
-    public ResponseEntity<?> noQuizExceptionHandler(NoQuizException exc) {
-        return new ResponseEntity<>(HttpStatus.NOT_FOUND);
-    }
-
     @ExceptionHandler(MethodArgumentNotValidException.class)
     public ResponseEntity<String> methodArgumentNotValidExceptionHandler(MethodArgumentNotValidException exc) {
         return new ResponseEntity<>(stringifyValidationErrors(exc), HttpStatus.BAD_REQUEST);

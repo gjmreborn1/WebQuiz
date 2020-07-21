@@ -19,7 +19,6 @@ public class QuizController {
     private final JwtUtils jwtUtils;
 
     @Autowired
-//        @Qualifier("InMemoryQuizService")
     public QuizController(@Qualifier("DatabaseQuizService") QuizService quizService,
                           JwtUtils jwtUtils) {
         this.quizService = quizService;
@@ -43,7 +42,7 @@ public class QuizController {
     }
 
     @PostMapping(path = "/quizzes")
-    public Quiz addQuiz(@Valid @RequestBody Quiz quiz,
+    public Quiz addQuiz(@RequestBody @Valid Quiz quiz,
                         @RequestHeader(name = "Authorization", required = false) String token) {
         jwtUtils.validateToken(token);
 
@@ -53,7 +52,7 @@ public class QuizController {
 
     @PostMapping(path = "/quizzes/{id}/solve")
     public QuizSolutionResponse solveQuiz(@PathVariable int id,
-                                          @RequestBody QuizSolutionRequest quizSolutionRequest,
+                                          @RequestBody @Valid QuizSolutionRequest quizSolutionRequest,
                                           @RequestHeader(name = "Authorization", required = false) String token) {
         jwtUtils.validateToken(token);
 
