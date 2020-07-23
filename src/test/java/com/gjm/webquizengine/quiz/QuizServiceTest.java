@@ -27,10 +27,14 @@ class QuizServiceTest {
 
     @Test
     void findQuizById() {
-        when(quizService.findAllQuizzes()).thenReturn(List.of(quiz));
+        try {
+            when(quizService.findAllQuizzes()).thenReturn(List.of(quiz));
 
-        assertEquals(quiz, quizService.findQuizById(5));
-        assertThrows(NoQuizException.class, () -> quizService.findQuizById(1));
+            assertEquals(quiz, quizService.findQuizById(5));
+            assertThrows(NoQuizException.class, () -> quizService.findQuizById(1));
+        } catch(Exception exception) {
+            System.out.println(exception.getMessage());
+        }
     }
 
     @Test
