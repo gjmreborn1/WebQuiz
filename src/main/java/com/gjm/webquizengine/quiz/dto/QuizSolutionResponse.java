@@ -16,4 +16,9 @@ public class QuizSolutionResponse {
             feedback = "Wrong answer! Please, try again.";
         }
     }
+
+    public QuizSolutionResponse(boolean success, String feedback) {
+        this.success = success;
+        this.feedback = feedback;
+    }
 }

@@ -31,6 +31,15 @@ public class User {
     @Email(message = "Email must be an valid email")
     private String email;
 
+    public User(String username, String password, String email) {
+        this.username = username;
+        this.password = password;
+        this.email = email;
+    }
+
+    public User() {
+    }
+
     public void encodePassword() {
         password = BCrypt.withDefaults()
                 .hashToString(12, password.toCharArray());

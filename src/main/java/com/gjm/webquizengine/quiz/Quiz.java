@@ -34,16 +34,16 @@ public class Quiz {
     @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
     private ArrayList<Integer> answer;
 
-    public Quiz(String title, String text, ArrayList<String> options, ArrayList<Integer> answer) {
+    public Quiz(String title, String text, List<String> options, List<Integer> answer) {
         this.title = title;
         this.text = text;
-        this.options = options;
+        this.options = new ArrayList<>(options);
 
         // Quiz can have no correct answers
         if(answer == null) {
             this.answer = new ArrayList<>();
         } else {
-            this.answer = answer;
+            this.answer = new ArrayList<>(answer);
         }
     }
 
@@ -52,8 +52,6 @@ public class Quiz {
     }
 
     public boolean isCorrect(List<Integer> passedAnswer) {
-        passedAnswer.retainAll(answer);
-
-        return passedAnswer.size() > 0;
+        return answer.containsAll(passedAnswer) && answer.size() == passedAnswer.size();
     }
 }

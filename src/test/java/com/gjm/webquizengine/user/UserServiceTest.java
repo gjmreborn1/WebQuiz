@@ -33,22 +33,11 @@ class UserServiceTest {
         userRepository.deleteAll();
         userService = new UserService(userRepository, jwtUtils);
 
-        exampleUser = new User();
-        exampleUser.setUsername("gjm");
-        exampleUser.setPassword("123456");
-        exampleUser.setEmail("gjm@gmail.com");
+        exampleUser = new User("gjm", "123456", "gjm@gmail.com");
 
-        realLoginDto = new LoginDto();
-        realLoginDto.setUsername("gjm");
-        realLoginDto.setPassword("123456");
-
-        fakeLoginDto = new LoginDto();
-        fakeLoginDto.setUsername(FAKE_USERNAME);
-        fakeLoginDto.setPassword(FAKE_PASSWORD);
-
-        fakePasswordLoginDto = new LoginDto();
-        fakePasswordLoginDto.setUsername("gjm");
-        fakePasswordLoginDto.setPassword(FAKE_PASSWORD);
+        realLoginDto = new LoginDto("gjm", "123456");
+        fakeLoginDto = new LoginDto(FAKE_USERNAME, FAKE_PASSWORD);
+        fakePasswordLoginDto = new LoginDto("gjm", FAKE_PASSWORD);
     }
 
     @Test

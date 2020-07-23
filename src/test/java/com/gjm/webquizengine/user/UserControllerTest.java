@@ -35,22 +35,11 @@ class UserControllerTest {
 
     @BeforeEach
     void setUp() {
-        user = new User();
-        user.setUsername("gjm");
-        user.setPassword("123456");
-        user.setEmail("gjm@gmail.com");
+        user = new User("gjm", "123456", "gjm@gmail.com");
+        malformedUser = new User("gjm", "123456", "fake email");
 
-        malformedUser = new User();
-        malformedUser.setUsername("gjm");
-        malformedUser.setPassword("123456");
-        malformedUser.setEmail("fake email");
-
-        loginDto = new LoginDto();
-        loginDto.setUsername("gjm");
-        loginDto.setPassword("123456");
-
-        malformedLoginDto = new LoginDto();
-        malformedLoginDto.setUsername("gjm");
+        loginDto = new LoginDto("gjm", "123456");
+        malformedLoginDto = new LoginDto("gjm", null);
     }
 
     @Test
