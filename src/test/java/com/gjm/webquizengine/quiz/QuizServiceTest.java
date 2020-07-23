@@ -4,13 +4,13 @@ import com.gjm.webquizengine.quiz.error_handling.NoQuizException;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
-import org.mockito.Mockito;
 import org.mockito.Spy;
 import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.*;
+import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
 class QuizServiceTest {
@@ -27,7 +27,7 @@ class QuizServiceTest {
 
     @Test
     void findQuizById() {
-        Mockito.lenient().when(quizService.findAllQuizzes()).thenReturn(List.of(quiz));
+        when(quizService.findAllQuizzes()).thenReturn(List.of(quiz));
 
         assertEquals(quiz, quizService.findQuizById(5));
         assertThrows(NoQuizException.class, () -> quizService.findQuizById(1));
@@ -35,7 +35,7 @@ class QuizServiceTest {
 
     @Test
     void solveQuiz() {
-        Mockito.lenient().when(quizService.findQuizById(5)).thenReturn(quiz);
+        when(quizService.findAllQuizzes()).thenReturn(List.of(quiz));
 
         assertTrue(quizService.solveQuiz(5, List.of(0, 1)));
     }
