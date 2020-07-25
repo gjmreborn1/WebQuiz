@@ -5,60 +5,61 @@ import com.gjm.webquizengine.user.dto.LoginDto;
 import com.gjm.webquizengine.user.error_handling.UserAlreadyExistException;
 import com.gjm.webquizengine.user.error_handling.UserDoesNotExistException;
 import com.gjm.webquizengine.user.error_handling.UserWrongPasswordException;
-import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.context.SpringBootTest;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.Mock;
+import org.mockito.junit.jupiter.MockitoExtension;
 
-@SpringBootTest
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.mockito.Mockito.when;
+
+@ExtendWith(MockitoExtension.class)
 class UserServiceTest {
     public static final String FAKE_USERNAME = "fake gjm";
     public static final String FAKE_PASSWORD = "fake password";
 
-    @Autowired
-    private UserRepository userRepository;
-
-    @Autowired
+    @Mock
     private JwtUtils jwtUtils;
 
-    private UserService userService;
     private User exampleUser;
-    private LoginDto realLoginDto;
-    private LoginDto fakeLoginDto;
-    private LoginDto fakePasswordLoginDto;
+    private UserService userService;
 
     @BeforeEach
     void setUp() {
-        userRepository.deleteAll();
-        userService = new UserService(userRepository, jwtUtils);
-
+        UserRepository userRepository = new FakeUserRepository();
         exampleUser = new User("gjm", "123456", "gjm@gmail.com");
-
-        realLoginDto = new LoginDto("gjm", "123456");
-        fakeLoginDto = new LoginDto(FAKE_USERNAME, FAKE_PASSWORD);
-        fakePasswordLoginDto = new LoginDto("gjm", FAKE_PASSWORD);
-    }
-
-    @Test
-    void register() {
-        userRepository.save(exampleUser);
-
-        Assertions.assertThrows(UserAlreadyExistException.class,
-                () -> userService.register(exampleUser));
-    }
-
-    @Test
-    void login() {
-        Assertions.assertThrows(UserDoesNotExistException.class,
-                () -> userService.login(fakeLoginDto));
+        userService = new UserService(userRepository, jwtUtils);
 
         exampleUser.encodePassword();
         userRepository.save(exampleUser);
-        Assertions.assertThrows(UserWrongPasswordException.class,
-                () -> userService.login(fakePasswordLoginDto));
+    }
 
-        Assertions.assertEquals(jwtUtils.generateToken(realLoginDto.getUsername()),
-                userService.login(realLoginDto));
+    @Test
+    void registerExistingUser() {
+        assertThrows(UserAlreadyExistException.class, () -> userService.register(exampleUser));
+    }
+
+    @Test
+    void loginNoExistingUser() {
+        LoginDto fakeLoginDto = new LoginDto(FAKE_USERNAME, FAKE_PASSWORD);
+
+        assertThrows(UserDoesNotExistException.class, () -> userService.login(fakeLoginDto));
+    }
+
+    @Test
+    void loginFakePassword() {
+        LoginDto fakePasswordLoginDto = new LoginDto("gjm", FAKE_PASSWORD);
+
+        assertThrows(UserWrongPasswordException.class, () -> userService.login(fakePasswordLoginDto));
+    }
+
+    @Test
+    void loginCorrect() {
+        LoginDto realLoginDto = new LoginDto("gjm", "123456");
+        when(jwtUtils.generateToken(realLoginDto.getUsername())).thenReturn("token");
+
+        assertEquals(jwtUtils.generateToken(realLoginDto.getUsername()), userService.login(realLoginDto));
     }
 }

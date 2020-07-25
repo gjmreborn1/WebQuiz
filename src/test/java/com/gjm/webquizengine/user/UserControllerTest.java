@@ -29,25 +29,23 @@ class UserControllerTest {
     private UserService userService;
 
     private User user;
-    private User malformedUser;
-    private LoginDto loginDto;
-    private LoginDto malformedLoginDto;
 
     @BeforeEach
     void setUp() {
         user = new User("gjm", "123456", "gjm@gmail.com");
-        malformedUser = new User("gjm", "123456", "fake email");
-
-        loginDto = new LoginDto("gjm", "123456");
-        malformedLoginDto = new LoginDto("gjm", null);
     }
 
     @Test
-    void register() throws Exception {
+    void registerCorrect() throws Exception {
         mockMvc.perform(post("/api/register")
                 .contentType("application/json")
                 .content(objectMapper.writeValueAsString(user)))
                 .andExpect(status().is(200));
+    }
+
+    @Test
+    void registerMalformedData() throws Exception {
+        User malformedUser = new User("", "1234", "fake email");
 
         mockMvc.perform(post("/api/register")
                 .contentType("application/json")
@@ -56,7 +54,8 @@ class UserControllerTest {
     }
 
     @Test
-    void login() throws Exception {
+    void loginCorrect() throws Exception {
+        LoginDto loginDto = new LoginDto("gjm", "123456");
         userService.register(user);
 
         mockMvc.perform(post("/api/login")
@@ -64,6 +63,11 @@ class UserControllerTest {
                 .content(objectMapper.writeValueAsString(loginDto)))
                 .andExpect(status().is(200))
                 .andExpect(content().string(Matchers.any(String.class)));
+    }
+
+    @Test
+    void loginMalformedData() throws Exception {
+        LoginDto malformedLoginDto = new LoginDto("", "");
 
         mockMvc.perform(post("/api/login")
                 .contentType("application/json")
