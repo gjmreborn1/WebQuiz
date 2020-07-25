@@ -28,6 +28,7 @@ public class Quiz {
     @NotBlank(message = "Text can't be empty")
     private String text;
 
+    // There must be ArrayList, because of Jackson serialization rules.
     @Size(min = 2, message = "There must be specified at least 2 options")
     private ArrayList<String> options;
 

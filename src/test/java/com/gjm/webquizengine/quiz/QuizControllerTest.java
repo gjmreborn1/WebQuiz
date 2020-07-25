@@ -21,9 +21,6 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
-// TODO: 1 test = 1 metoda (rozbic) + wiecej mockow, mniej zaleznosci - 1 test powinien testowac tylko dany modul, bez zaleznosci
-// TODO: @BeforeAll w niektorych miejscach?
-
 @SpringBootTest
 @AutoConfigureMockMvc
 @DirtiesContext(classMode = DirtiesContext.ClassMode.BEFORE_EACH_TEST_METHOD)
@@ -40,99 +37,100 @@ class QuizControllerTest {
 
     @Autowired
     private UserService userService;
-
-    private Quiz quizToAdd;
-    private Quiz quizToAdd2;
-    private Quiz malformedQuiz;
     private String userJwt;
+
+    private Quiz quiz;
 
     @BeforeEach
     void setUp() {
-        quizToAdd = new Quiz("title", "text", List.of("option1", "option2", "option3"), List.of(0, 1));
-        quizToAdd2 = new Quiz("title1", "text1", List.of("option11", "option22", "option33"), null);
-        malformedQuiz = new Quiz("", "", List.of("option1"), null);
+        quiz = new Quiz("title", "text", List.of("option1", "option2", "option3"), List.of(0, 1));
 
         userService.register(new User("gjm", "123456", "gjm@gmail.com"));
         userJwt = userService.login(new LoginDto("gjm", "123456"));
     }
 
     @Test
-    void getQuiz() throws Exception {
+    void getQuizUnauthorized() throws Exception {
         mockMvc.perform(get("/api/quizzes/1"))
                 .andExpect(status().is(401));
+    }
 
-        quizService.addQuiz(quizToAdd);
-        mockMvc.perform(get("/api/quizzes/" + quizToAdd.getId())
+    @Test
+    void getQuizSuccess() throws Exception {
+        quizService.addQuiz(quiz);
+
+        mockMvc.perform(get("/api/quizzes/" + quiz.getId())
                 .header("Authorization", userJwt))
-                .andExpect(content().json(objectMapper.writeValueAsString(quizToAdd)))
+                .andExpect(content().json(objectMapper.writeValueAsString(quiz)))
                 .andExpect(status().is(200));
     }
 
     @Test
-    void getQuizzes() throws Exception {
+    void getQuizzesUnauthorized() throws Exception {
         mockMvc.perform(get("/api/quizzes"))
                 .andExpect(status().is(401));
+    }
 
-        quizService.addQuiz(quizToAdd);
-        quizService.addQuiz(quizToAdd2);
+    @Test
+    void getQuizzesSuccess() throws Exception {
+        quizService.addQuiz(quiz);
+
         mockMvc.perform(get("/api/quizzes")
                 .header("Authorization", userJwt))
-                .andExpect(content().json(objectMapper.writeValueAsString(List.of(quizToAdd, quizToAdd2))))
+                .andExpect(content().json(objectMapper.writeValueAsString(List.of(quiz))))
                 .andExpect(status().is(200));
     }
 
     @Test
-    void addQuiz() throws Exception {
+    void addQuizUnauthorized() throws Exception {
         mockMvc.perform(post("/api/quizzes")
                 .contentType("application/json")
-                .content(objectMapper.writeValueAsString(quizToAdd)))
+                .content(objectMapper.writeValueAsString(quiz)))
                 .andExpect(status().is(401));
+    }
+
+    @Test
+    void addQuizMalformedData() throws Exception {
+        Quiz malformedQuiz = new Quiz("", "", List.of("option1"), null);
 
         mockMvc.perform(post("/api/quizzes")
                 .contentType("application/json")
                 .content(objectMapper.writeValueAsString(malformedQuiz)))
                 .andExpect(status().is(400));
+    }
 
+    @Test
+    void addQuizSuccess() throws Exception {
         String jsonResponse = mockMvc.perform(post("/api/quizzes")
                 .header("Authorization", userJwt)
                 .contentType("application/json")
-                .content(objectMapper.writeValueAsString(quizToAdd)))
+                .content(objectMapper.writeValueAsString(quiz)))
                 .andExpect(status().is(200))
                 .andReturn().getResponse().getContentAsString();
+
         assertEquals(2, objectMapper.readValue(jsonResponse, Quiz.class).getId());
     }
 
     @Test
-    void solveQuiz() throws Exception {
+    void solveQuizUnauthorized() throws Exception {
         mockMvc.perform(post("/api/quizzes/1/solve")
                 .contentType("application/json")
                 .content("{\"answer\": [0, 1]}"))
                 .andExpect(status().is(401));
+    }
 
+    @Test
+    void solveQuizMalformedData() throws Exception {
         mockMvc.perform(post("/api/quizzes/1/solve")
                 .header("Authorization", userJwt)
                 .contentType("application/json")
                 .content("{}"))
                 .andExpect(status().is(400));
+    }
 
-        quizService.addQuiz(quizToAdd);
-        String jsonResponse = mockMvc.perform(post("/api/quizzes/" + quizToAdd.getId() + "/solve")
-                .header("Authorization", userJwt)
-                .contentType("application/json")
-                .content("{\"answer\": [0, 1]}"))
-                .andExpect(status().is(200))
-                .andReturn().getResponse().getContentAsString();
-        assertTrue(objectMapper.readValue(jsonResponse, QuizSolutionResponse.class).isSuccess());
-
-        jsonResponse = mockMvc.perform(post("/api/quizzes/" + quizToAdd.getId() + "/solve")
-                .header("Authorization", userJwt)
-                .contentType("application/json")
-                .content("{\"answer\": [0, 2]}"))
-                .andExpect(status().is(200))
-                .andReturn().getResponse().getContentAsString();
-        assertFalse(objectMapper.readValue(jsonResponse, QuizSolutionResponse.class).isSuccess());
-
-        mockMvc.perform(post("/api/quizzes/5/solve")
+    @Test
+    void solveQuizNoExisting() throws Exception {
+        mockMvc.perform(post("/api/quizzes/-1/solve")
                 .header("Authorization", userJwt)
                 .contentType("application/json")
                 .content("{\"answer\": [0, 2]}"))
@@ -140,12 +138,51 @@ class QuizControllerTest {
     }
 
     @Test
-    void deleteQuiz() throws Exception {
+    void solveQuizCorrect() throws Exception {
+        quizService.addQuiz(quiz);
+
+        String jsonResponse = mockMvc.perform(post("/api/quizzes/" + quiz.getId() + "/solve")
+                .header("Authorization", userJwt)
+                .contentType("application/json")
+                .content("{\"answer\": [0, 1]}"))
+                .andExpect(status().is(200))
+                .andReturn().getResponse().getContentAsString();
+
+        assertTrue(objectMapper.readValue(jsonResponse, QuizSolutionResponse.class).isSuccess());
+    }
+
+    @Test
+    void solveQuizIncorrect() throws Exception {
+        quizService.addQuiz(quiz);
+
+        String jsonResponse = mockMvc.perform(post("/api/quizzes/" + quiz.getId() + "/solve")
+                .header("Authorization", userJwt)
+                .contentType("application/json")
+                .content("{\"answer\": [0, 2]}"))
+                .andExpect(status().is(200))
+                .andReturn().getResponse().getContentAsString();
+
+        assertFalse(objectMapper.readValue(jsonResponse, QuizSolutionResponse.class).isSuccess());
+    }
+
+    @Test
+    void deleteQuizUnauthorized() throws Exception {
         mockMvc.perform(delete("/api/quizzes/1"))
                 .andExpect(status().is(401));
+    }
 
-        quizService.addQuiz(quizToAdd);
-        mockMvc.perform(delete("/api/quizzes/" + quizToAdd.getId())
+    @Test
+    void deleteQuizNoExisting() throws Exception {
+        mockMvc.perform(delete("/api/quizzes/-1")
+                .header("Authorization", userJwt))
+                .andExpect(status().is(404));
+    }
+
+    @Test
+    void deleteQuizSuccess() throws Exception {
+        quizService.addQuiz(quiz);
+
+        mockMvc.perform(delete("/api/quizzes/" + quiz.getId())
                 .header("Authorization", userJwt))
                 .andExpect(status().is(204));
     }

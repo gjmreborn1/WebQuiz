@@ -10,30 +10,47 @@ import static org.junit.jupiter.api.Assertions.*;
 
 class QuizTest {
     @Test
-    void isCorrect() {
-        Quiz quizNoCorrectAnswer = new Quiz("title", "text", List.of("option1", "option2", "option3"), null);
-        assertTrue(quizNoCorrectAnswer.isCorrect(Collections.emptyList()));
-        assertFalse(quizNoCorrectAnswer.isCorrect(List.of(1, 2, 3)));
+    void isCorrectNoAnswer() {
+        Quiz quiz = new Quiz("title", "text", List.of("option1", "option2", "option3"), null);
 
-        Quiz quizOneCorrectAnswer = new Quiz("title", "text", List.of("option1", "option2", "option3"), List.of(0));
-        assertTrue(quizOneCorrectAnswer.isCorrect(List.of(0)));
-        assertFalse(quizOneCorrectAnswer.isCorrect(List.of(1)));
-        assertFalse(quizOneCorrectAnswer.isCorrect(List.of(0, 1)));
+        assertTrue(quiz.isCorrect(Collections.emptyList()));
 
-        Quiz quizFewCorrectAnswer = new Quiz("title", "text", List.of("option1", "option2", "option3"), List.of(1, 2));
-        assertTrue(quizFewCorrectAnswer.isCorrect(List.of(1, 2)));
-        assertFalse(quizFewCorrectAnswer.isCorrect(List.of(1, 2, 0)));
-        assertFalse(quizFewCorrectAnswer.isCorrect(List.of(1)));
-        assertFalse(quizFewCorrectAnswer.isCorrect(List.of(2)));
-        assertFalse(quizFewCorrectAnswer.isCorrect(Collections.emptyList()));
+        assertFalse(quiz.isCorrect(List.of(1, 2, 3)));
     }
 
     @Test
-    void getAnswer() {
-        Quiz quiz1 = new Quiz();
-        Quiz quiz2 = new Quiz("title", "text", new ArrayList<>(), null);
+    void isCorrectOneAnswer() {
+        Quiz quiz = new Quiz("title", "text", List.of("option1", "option2", "option3"), List.of(1));
 
-        assertNotNull(quiz1.getAnswer());
-        assertNotNull(quiz2.getAnswer());
+        assertTrue(quiz.isCorrect(List.of(1)));
+
+        assertFalse(quiz.isCorrect(List.of(2)));
+        assertFalse(quiz.isCorrect(List.of(1, 2)));
+    }
+
+    @Test
+    void isCorrectFewAnswer() {
+        Quiz quiz = new Quiz("title", "text", List.of("option1", "option2", "option3"), List.of(1, 2));
+
+        assertTrue(quiz.isCorrect(List.of(1, 2)));
+
+        assertFalse(quiz.isCorrect(List.of(1, 2, 0)));
+        assertFalse(quiz.isCorrect(List.of(1)));
+        assertFalse(quiz.isCorrect(List.of(2)));
+        assertFalse(quiz.isCorrect(Collections.emptyList()));
+    }
+
+    @Test
+    void getAnswerDefaultConstructor() {
+        Quiz quiz = new Quiz();
+
+        assertNotNull(quiz.getAnswer());
+    }
+
+    @Test
+    void getAnswerFromNull() {
+        Quiz quiz = new Quiz("title", "text", new ArrayList<>(), null);
+
+        assertNotNull(quiz.getAnswer());
     }
 }

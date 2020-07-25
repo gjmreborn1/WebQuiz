@@ -4,6 +4,7 @@ import com.gjm.webquizengine.quiz.error_handling.NoQuizException;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
@@ -18,52 +19,71 @@ class QuizServiceDatabaseImplTest {
     @Mock
     private QuizRepository quizRepository;
 
+    @InjectMocks
     private QuizServiceDatabaseImpl quizService;
+
     private List<Quiz> quizzes;
 
     @BeforeEach
     void setUp() {
         quizzes = List.of(new Quiz("title1", "text1", Collections.emptyList(), List.of(0, 1)),
                           new Quiz("title2", "text2", Collections.emptyList(), null));
-        quizzes.get(0).setId(5);
-
-        quizService = new QuizServiceDatabaseImpl(quizRepository);
+        for(int i = 0; i < quizzes.size(); i++) {
+            quizzes.get(i).setId(i + 1);
+        }
     }
 
     @Test
     void findAllQuizzes() {
         when(quizRepository.findAll()).thenReturn(quizzes);
+
         assertEquals(quizzes, quizService.findAllQuizzes());
     }
 
     @Test
     void addQuiz() {
-        Quiz tempQuiz = new Quiz();
-        quizService.addQuiz(tempQuiz);
+        Quiz quiz = new Quiz();
+        quizService.addQuiz(quiz);
 
-        verify(quizRepository, times(1)).save(tempQuiz);
+        verify(quizRepository, times(1)).save(quiz);
     }
 
     @Test
     void deleteQuiz() {
         when(quizRepository.findAll()).thenReturn(quizzes);
-        quizService.deleteQuiz(5);
 
-        verify(quizRepository, times(1)).deleteById(5);
+        quizService.deleteQuiz(1);
+
+        verify(quizRepository, times(1)).deleteById(1);
     }
 
     @Test
-    void findQuizById() {
+    void findQuizByIdExistent() {
         when(quizRepository.findAll()).thenReturn(quizzes);
 
-        assertEquals(quizzes.get(0), quizService.findQuizById(5));
-        assertThrows(NoQuizException.class, () -> quizService.findQuizById(1));
+        Quiz quiz = quizzes.get(0);
+
+        assertEquals(quiz, quizService.findQuizById(quiz.getId()));
     }
 
     @Test
-    void solveQuiz() {
+    void findQuizByIdNoExistent() {
         when(quizRepository.findAll()).thenReturn(quizzes);
 
-        assertTrue(quizService.solveQuiz(5, List.of(0, 1)));
+        assertThrows(NoQuizException.class, () -> quizService.findQuizById(-1));
+    }
+
+    @Test
+    void solveQuizSuccess() {
+        when(quizRepository.findAll()).thenReturn(quizzes);
+
+        assertTrue(quizService.solveQuiz(1, List.of(0, 1)));
+    }
+
+    @Test
+    void solveQuizFailure() {
+        when(quizRepository.findAll()).thenReturn(quizzes);
+
+        assertFalse(quizService.solveQuiz(1, List.of(1)));
     }
 }

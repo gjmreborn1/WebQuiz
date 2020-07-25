@@ -1,5 +1,6 @@
 package com.gjm.webquizengine.quiz;
 
+import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
 
@@ -8,7 +9,9 @@ import java.util.List;
 
 @Service
 @Qualifier("InMemoryQuizService")
+@RequiredArgsConstructor
 public class QuizServiceInMemoryImpl implements QuizService {
+    private static int counter = 0;
     private final List<Quiz> quizzes;
 
     public QuizServiceInMemoryImpl() {
@@ -22,6 +25,9 @@ public class QuizServiceInMemoryImpl implements QuizService {
 
     @Override
     public void addQuiz(Quiz quiz) {
+        counter++;
+        quiz.setId(counter);
+
         quizzes.add(quiz);
     }
 

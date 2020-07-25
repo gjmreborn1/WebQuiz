@@ -6,12 +6,10 @@ import java.util.List;
 
 public interface QuizService {
     default Quiz findQuizById(int id) {
-        for(Quiz quiz : findAllQuizzes()) {
-            if(quiz.getId() == id) {
-                return quiz;
-            }
-        }
-        throw new NoQuizException();
+        return findAllQuizzes().stream()
+                .filter(quiz -> quiz.getId() == id)
+                .findFirst()
+                .orElseThrow(NoQuizException::new);
     }
 
     default boolean solveQuiz(int id, List<Integer> answer) {

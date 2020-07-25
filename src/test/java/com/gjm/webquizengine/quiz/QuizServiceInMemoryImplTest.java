@@ -7,6 +7,7 @@ import org.junit.jupiter.api.Test;
 import java.util.Collections;
 import java.util.List;
 
+import static java.util.Collections.EMPTY_LIST;
 import static org.junit.jupiter.api.Assertions.*;
 
 class QuizServiceInMemoryImplTest {
@@ -15,38 +16,58 @@ class QuizServiceInMemoryImplTest {
 
     @BeforeEach
     void setUp() {
-        quizService = new QuizServiceInMemoryImpl();
-
         quiz = new Quiz("title", "text", Collections.emptyList(), List.of(0, 1));
-        quiz.setId(5);
-        quizService.addQuiz(quiz);
+        quiz.setId(1);
+
+        quizService = new QuizServiceInMemoryImpl();
     }
 
     @Test
     void findAllQuizzes() {
-        assertEquals(List.of(quiz), quizService.findAllQuizzes());
+        quizService.findAllQuizzes();
+
+        assertEquals(EMPTY_LIST, quizService.findAllQuizzes());
     }
 
     @Test
     void addQuiz() {
-        assertTrue(quizService.findAllQuizzes().contains(quiz));
+        quizService.addQuiz(quiz);
+
+        assertEquals(List.of(quiz), quizService.findAllQuizzes());
     }
 
     @Test
     void deleteQuiz() {
-        quizService.deleteQuiz(5);
+        quizService.addQuiz(quiz);
 
-        assertFalse(quizService.findAllQuizzes().contains(quiz));
+        quizService.deleteQuiz(1);
+
+        assertEquals(EMPTY_LIST, quizService.findAllQuizzes());
     }
 
     @Test
-    void findQuizById() {
-        assertEquals(quiz, quizService.findQuizById(5));
-        assertThrows(NoQuizException.class, () -> quizService.findQuizById(1));
+    void findQuizByIdExistent() {
+        quizService.addQuiz(quiz);
+
+        assertEquals(quiz, quizService.findQuizById(quiz.getId()));
     }
 
     @Test
-    void solveQuiz() {
-        assertTrue(quizService.solveQuiz(5, List.of(0, 1)));
+    void findQuizByIdNoExistent() {
+        assertThrows(NoQuizException.class, () -> quizService.findQuizById(-1));
+    }
+
+    @Test
+    void solveQuizSuccess() {
+        quizService.addQuiz(quiz);
+
+        assertTrue(quizService.solveQuiz(1, List.of(0, 1)));
+    }
+
+    @Test
+    void solveQuizFailure() {
+        quizService.addQuiz(quiz);
+
+        assertFalse(quizService.solveQuiz(1, List.of(1)));
     }
 }

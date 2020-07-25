@@ -6,11 +6,16 @@ import static org.junit.jupiter.api.Assertions.*;
 
 class QuizSolutionResponseTest {
     @Test
-    void getFeedback() {
-        QuizSolutionResponse quizSolutionResponseSuccess = new QuizSolutionResponse(true);
-        QuizSolutionResponse quizSolutionResponseFailure = new QuizSolutionResponse(false);
+    void getFeedbackSuccess() {
+        QuizSolutionResponse responseSuccess = new QuizSolutionResponse(true);
 
-        assertEquals("Congratulations, you're right!", quizSolutionResponseSuccess.getFeedback());
-        assertEquals("Wrong answer! Please, try again.", quizSolutionResponseFailure.getFeedback());
+        assertEquals("Congratulations, you're right!", responseSuccess.getFeedback());
+    }
+
+    @Test
+    void getFeedbackFailure() {
+        QuizSolutionResponse responseFailure = new QuizSolutionResponse(false);
+
+        assertEquals("Wrong answer! Please, try again.", responseFailure.getFeedback());
     }
 }
