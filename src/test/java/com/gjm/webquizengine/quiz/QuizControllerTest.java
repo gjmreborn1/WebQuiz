@@ -21,6 +21,9 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
+// TODO: 1 test = 1 metoda (rozbic) + wiecej mockow, mniej zaleznosci - 1 test powinien testowac tylko dany modul, bez zaleznosci
+// TODO: @BeforeAll w niektorych miejscach?
+
 @SpringBootTest
 @AutoConfigureMockMvc
 @DirtiesContext(classMode = DirtiesContext.ClassMode.BEFORE_EACH_TEST_METHOD)

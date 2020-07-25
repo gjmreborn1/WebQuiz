@@ -1,10 +1,11 @@
 package com.gjm.webquizengine;
 
 import com.gjm.webquizengine.user.error_handling.JwtSecurityException;
-import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+
+import static org.junit.jupiter.api.Assertions.*;
 
 @SpringBootTest
 class JwtUtilsTest {
@@ -17,19 +18,26 @@ class JwtUtilsTest {
     void decodeToken() {
         String token = jwtUtils.generateToken(USERNAME);
 
-        Assertions.assertEquals(USERNAME, jwtUtils.decodeToken(token));
+        assertEquals(USERNAME, jwtUtils.decodeToken(token));
     }
 
     @Test
-    void validateToken() {
+    void validateIncorrectToken() {
+        assertThrows(JwtSecurityException.class, () -> jwtUtils.validateToken(null));
+        assertThrows(JwtSecurityException.class, () -> jwtUtils.validateToken(""));
+    }
+
+    @Test
+    void validateMalformedToken() {
         String token = jwtUtils.generateToken(USERNAME) + "XAXAXA";
 
-        Assertions.assertThrows(JwtSecurityException.class,
-                () -> jwtUtils.validateToken(null));
-        Assertions.assertThrows(JwtSecurityException.class,
-                () -> jwtUtils.validateToken(""));
+        assertThrows(JwtSecurityException.class, () -> jwtUtils.validateToken(token));
+    }
 
-        Assertions.assertThrows(JwtSecurityException.class,
-                () -> jwtUtils.validateToken(token));
+    @Test
+    void validateCorrectToken() {
+        String token = jwtUtils.generateToken(USERNAME);
+
+        assertDoesNotThrow(() -> jwtUtils.validateToken(token));
     }
 }
