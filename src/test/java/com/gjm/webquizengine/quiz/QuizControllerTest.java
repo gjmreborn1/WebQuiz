@@ -69,7 +69,7 @@ class QuizControllerTest {
 
     @Test
     void getQuizzesUnauthorized() throws Exception {
-        mockMvc.perform(get("/api/quizzes"))
+        mockMvc.perform(get("/api/quizzes?page=0"))
                 .andExpect(status().is(401));
     }
 
