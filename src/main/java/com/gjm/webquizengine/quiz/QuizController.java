@@ -5,12 +5,12 @@ import com.gjm.webquizengine.quiz.dto.QuizSolutionRequest;
 import com.gjm.webquizengine.quiz.dto.QuizSolutionResponse;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
-import java.util.List;
 
 @RestController
 @RequestMapping(path = "/api")
@@ -34,11 +34,12 @@ public class QuizController {
     }
 
     @GetMapping(path = "/quizzes")
-    public List<Quiz> getQuizzes(
+    public Page<Quiz> getQuizzes(
+            @RequestParam("page") int page,
             @RequestHeader(name = "Authorization", required = false) String token) {
         jwtUtils.validateToken(token);
 
-        return quizService.findAllQuizzes();
+        return quizService.findAllQuizzesPaged(page);
     }
 
     @PostMapping(path = "/quizzes")

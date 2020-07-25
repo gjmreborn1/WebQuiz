@@ -11,6 +11,8 @@ The multi-user web application for creating and solving quizzes.
 * options - array of possible answers, required at least 2 options
 * answer - indexes of correct answers, **only writable** (Jackson doesn't serialize it), optional (because all options can be wrong)
 
+pages starts from 0
+
 ### Currently, we have these operations:
 * creating a new quiz - POST `/api/quizzes` with body including Quiz JSON Server responds with JSON including id, title, text and options fields.
 * get quiz by id - GET `/api/quizzes/{id}` returns Quiz JSON or 404 if quiz doesn't exist

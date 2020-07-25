@@ -2,6 +2,9 @@ package com.gjm.webquizengine.quiz;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
@@ -16,6 +19,15 @@ public class QuizServiceInMemoryImpl implements QuizService {
 
     public QuizServiceInMemoryImpl() {
         quizzes = new ArrayList<>();
+    }
+
+    @Override
+    public Page<Quiz> findAllQuizzesPaged(int page) {
+        PageRequest pageable = PageRequest.of(page, 10);
+        int start = (int) pageable.getOffset();
+        int end = Math.min(start + pageable.getPageSize(), quizzes.size());
+
+        return new PageImpl<>(quizzes.subList(start, end), pageable, quizzes.size());
     }
 
     @Override

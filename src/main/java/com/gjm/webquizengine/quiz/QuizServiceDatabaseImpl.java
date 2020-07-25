@@ -2,6 +2,8 @@ package com.gjm.webquizengine.quiz;
 
 import lombok.AllArgsConstructor;
 import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -11,6 +13,11 @@ import java.util.List;
 @AllArgsConstructor
 public class QuizServiceDatabaseImpl implements QuizService {
     private final QuizRepository quizRepository;
+
+    @Override
+    public Page<Quiz> findAllQuizzesPaged(int page) {
+        return quizRepository.findAll(PageRequest.of(page, 10));
+    }
 
     @Override
     public List<Quiz> findAllQuizzes() {

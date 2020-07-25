@@ -1,6 +1,7 @@
 package com.gjm.webquizengine.quiz;
 
 import com.gjm.webquizengine.quiz.error_handling.NoQuizException;
+import org.springframework.data.domain.Page;
 
 import java.util.List;
 
@@ -18,6 +19,7 @@ public interface QuizService {
         return quiz.isCorrect(answer);
     }
 
+    Page<Quiz> findAllQuizzesPaged(int page);
     List<Quiz> findAllQuizzes();
     void addQuiz(Quiz quiz);
     void deleteQuiz(int id);

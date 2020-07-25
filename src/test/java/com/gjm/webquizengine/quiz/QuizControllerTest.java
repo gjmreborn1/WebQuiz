@@ -11,6 +11,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.web.servlet.MockMvc;
 
@@ -73,11 +75,15 @@ class QuizControllerTest {
 
     @Test
     void getQuizzesSuccess() throws Exception {
+        int pageNumber = 0;
+        List<Quiz> quizzes = List.of(quiz);
         quizService.addQuiz(quiz);
 
-        mockMvc.perform(get("/api/quizzes")
+        mockMvc.perform(get("/api/quizzes?page=" + pageNumber)
                 .header("Authorization", userJwt))
-                .andExpect(content().json(objectMapper.writeValueAsString(List.of(quiz))))
+                .andExpect(content().json(objectMapper.writeValueAsString(
+                        new PageImpl<>(quizzes, PageRequest.of(pageNumber, 10), quizzes.size())
+                )))
                 .andExpect(status().is(200));
     }
 

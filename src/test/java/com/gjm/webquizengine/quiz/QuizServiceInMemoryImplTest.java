@@ -3,6 +3,8 @@ package com.gjm.webquizengine.quiz;
 import com.gjm.webquizengine.quiz.error_handling.NoQuizException;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
 
 import java.util.Collections;
 import java.util.List;
@@ -26,6 +28,14 @@ class QuizServiceInMemoryImplTest {
         quizService.findAllQuizzes();
 
         assertEquals(EMPTY_LIST, quizService.findAllQuizzes());
+    }
+
+    @Test
+    void findAllQuizzesPaged() {
+        Page<Quiz> quizPage = new PageImpl<>(List.of(quiz));
+        quizService.addQuiz(quiz);
+
+        assertEquals(quizPage.getContent(), quizService.findAllQuizzesPaged(0).getContent());
     }
 
     @Test

@@ -7,6 +7,9 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.Pageable;
 
 import java.util.Collections;
 import java.util.List;
@@ -38,6 +41,14 @@ class QuizServiceDatabaseImplTest {
         when(quizRepository.findAll()).thenReturn(quizzes);
 
         assertEquals(quizzes, quizService.findAllQuizzes());
+    }
+
+    @Test
+    void findAllQuizzesPages() {
+        Page<Quiz> quizPage = new PageImpl<>(quizzes);
+        when(quizRepository.findAll(any(Pageable.class))).thenReturn(quizPage);
+
+        assertEquals(quizPage, quizService.findAllQuizzesPaged(0));
     }
 
     @Test
