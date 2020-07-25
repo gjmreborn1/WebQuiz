@@ -17,7 +17,6 @@ class QuizServiceInMemoryImplTest {
     @BeforeEach
     void setUp() {
         quiz = new Quiz("title", "text", Collections.emptyList(), List.of(0, 1));
-        quiz.setId(1);
 
         quizService = new QuizServiceInMemoryImpl();
     }
@@ -40,7 +39,7 @@ class QuizServiceInMemoryImplTest {
     void deleteQuiz() {
         quizService.addQuiz(quiz);
 
-        quizService.deleteQuiz(1);
+        quizService.deleteQuiz(quiz.getId());
 
         assertEquals(EMPTY_LIST, quizService.findAllQuizzes());
     }
@@ -61,13 +60,13 @@ class QuizServiceInMemoryImplTest {
     void solveQuizSuccess() {
         quizService.addQuiz(quiz);
 
-        assertTrue(quizService.solveQuiz(1, List.of(0, 1)));
+        assertTrue(quizService.solveQuiz(quiz.getId(), List.of(0, 1)));
     }
 
     @Test
     void solveQuizFailure() {
         quizService.addQuiz(quiz);
 
-        assertFalse(quizService.solveQuiz(1, List.of(1)));
+        assertFalse(quizService.solveQuiz(quiz.getId(), List.of(1)));
     }
 }
