@@ -1,11 +1,30 @@
 # Web Quiz
+### The multi-user web application for creating and solving quizzes.
 
 [![gjmreborn1](https://circleci.com/gh/gjmreborn1/WebQuiz.svg?style=shield)](https://circleci.com)
 
-The multi-user web application for creating and solving quizzes. Quizzes are paged (pages start from 0).
-To authorize yourself, you must pass valid JWT token inside Authorization header. If you will be unauthorized at the secure route, 401 status code will be returned.
+### Features
+* User authorization system
+* Variety of quiz operations (add, remove, solve, get)
+* Data validation that ensures its consistency
 
-Unit and integration tests are provided for the most important classes.
+### Developers info
+* Unit and integration tests are provided.
+* Authorization is done with **JWT strategy** (you pass JWT inside **Authorization header**).
+If you will be unauthorized at the secure route, 401 status code is returned.
+* Quizzes are paged (pages start from 0).
+* There are two implementations of QuizService (choose implementation in QuizController's constructor):
+    * QuizServiceDatabaseImpl (DatabaseQuizService qualifier) - stores quizzes data inside database
+    * QuizServiceInMemoryImpl (InMemoryQuizService qualifier) - stores quizzes data inside in-memory list
+
+### Technologies used
+* Java
+* Spring
+* Hibernate (JPA)
+* JUnit
+* Mockito
+* Gradle
+* Git
 
 ### Each user has these fields:
 * id
@@ -14,7 +33,7 @@ Unit and integration tests are provided for the most important classes.
 * email - is required and must be valid email
 
 ### Operations on users:
-* POST `/api/register` - register user. User's JSON must be sent in request body. When success returns 200, but when user already exist 400 is returned. 
+* POST `/api/register` - register user. User's JSON must be sent in request body. When success returns 200, but when user already exist 400 is returned.
 * POST `/api/login` - login user by name and password (sent in request body). JWT token is returned in case of success (200).
 When user doesn't exist 404 is returned and when passwords are mismatched 400 will be returned.
 
