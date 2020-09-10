@@ -12,7 +12,7 @@
 * Unit and integration tests are provided.
 * Authorization is done with **JWT strategy** (you pass JWT inside **Authorization header**).
 If you will be unauthorized at the secure route, 401 status code is returned.
-* Quizzes are paged (pages start from 0).
+* Quizzes are paged (pages count from 0).
 * There are two implementations of QuizService (choose implementation in QuizController's constructor):
     * QuizServiceDatabaseImpl (DatabaseQuizService qualifier) - stores quizzes data inside database
     * QuizServiceInMemoryImpl (InMemoryQuizService qualifier) - stores quizzes data inside in-memory list
